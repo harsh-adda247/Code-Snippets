@@ -170,4 +170,49 @@ public class Algorthims {
         }
         return true;
     }
+
+
+    /**
+     * method to compute total hours and minutes remaining from the current time
+     *
+     * @param startDate   - the starting date of the live class
+     * @param startTime   - the time when the live class will start
+     * @param currentDate - the current date
+     * @param currentTime - the current time (hours and minutes)
+     * @return
+     */
+    public String computeTimeDifference(String startDate, String startTime, String currentDate, String currentTime) {
+        String dateFormat = "yyyy-MM-dd HH:mm:ss";
+        try {
+            String currentTimeStamp = currentDate + " " + currentTime;
+            String targetTimeStamp = startDate + " " + startTime;
+            Date date1 = new SimpleDateFormat(dateFormat).parse(currentTimeStamp);
+            Date date2 = new SimpleDateFormat(dateFormat).parse(targetTimeStamp);
+
+            long difference = date2.getTime() - date1.getTime();    // milliseconds
+            long seconds = difference / 1000L;
+            long minutes = seconds / 60L;
+            seconds -= minutes * 60L;
+            long hours = minutes / 60L;
+            minutes -= hours * 60L;
+            long days = hours / 24L;
+            hours -= days * 24L;
+            long months = days / 30L;
+            days -= months * 30L;
+            long years = months / 12L;
+            months -= years * 12L;
+
+            String finalMessage = "";
+            if (years > 0L) finalMessage += years > 1L ? years + " years " : years + " year ";
+            if (months > 0L) finalMessage += months > 1L ? months + " months " : months + " month ";
+            if (days > 0L) finalMessage += days > 1L ? days + " days " : days + " day ";
+            if (hours > 0L) finalMessage += hours > 1L ? hours + " hours " : hours + " hour ";
+            if (minutes > 0L) finalMessage += minutes > 1L ? minutes + " minutes " : minutes + " minute ";
+            if (seconds > 0L) finalMessage += seconds > 1L ? seconds + " seconds " : seconds + " second ";
+
+            return !finalMessage.equals("") ? finalMessage + "left" : finalMessage;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

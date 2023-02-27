@@ -50,13 +50,23 @@ public class RequestExceptionHandlerController extends ResponseEntityExceptionHa
 
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        if (ex.getClass() == MethodArgumentTypeMismatchException.class) {
+            return handleMethodArgumentTypeMismatchException((MethodArgumentTypeMismatchException) ex);
+        }
         UIBean<Object> responseBean = getErrorUIBeanInstance("Invalid type found for " + ex.getPropertyName() + ", whereas it should be of type " + ex.getRequiredType() + " !", ex.getMessage());
+        return new ResponseEntity<>(responseBean, HttpStatus.BAD_REQUEST);
+    }
+
+    protected ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        UIBean<Object> responseBean = getErrorUIBeanInstance("Invalid type found for " + ex.getName() + ", whereas it should be of type " + ex.getRequiredType() + " !", ex.getMessage());
         return new ResponseEntity<>(responseBean, HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        UIBean<Object> responseBean = getErrorUIBeanInstance("Invalid request : " + ex.getMessage(), ex.getCause());
+        String errorMessage = ex.getCause() != null ? ex.getCause().getMessage() : "Unknown";
+        errorMessage = errorMessage.substring(0, errorMessage.indexOf(":"));
+        UIBean<Object> responseBean = getErrorUIBeanInstance("Invalid request : " + errorMessage, null);
         return new ResponseEntity<>(responseBean, HttpStatus.BAD_REQUEST);
     }
 
